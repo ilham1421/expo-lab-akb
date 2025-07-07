@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#9b59b6", // Purple
     paddingHorizontal: 30,
     paddingVertical: 15,
-    borderRadius: 25,
+    borderRadius: 100,
     marginBottom: 20,
     minWidth: 250,
     alignItems: "center",
@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
   numberText: {
     color: "white",
     fontSize: 24,
-    fontWeight: "bold",
+    fontWeight: "900", // Membuat font lebih tebal (dari "bold" ke "900")
     textAlign: "center",
     letterSpacing: 1,
   },
