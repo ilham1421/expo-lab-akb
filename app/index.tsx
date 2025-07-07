@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#1abc9c", // Turquoise/Teal
     paddingHorizontal: 35,
     paddingVertical: 15,
-    borderRadius: 25,
+    borderRadius: 0, // Menghilangkan border radius untuk bentuk persegi
     minWidth: 280,
     alignItems: "center",
     shadowColor: "#1abc9c",
