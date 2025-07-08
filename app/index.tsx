@@ -9,10 +9,8 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-// import { Image } from "expo-image"; // Import Image from expo-image
 const { width, height } = Dimensions.get("window");
 
-// Data untuk 9 gambar dengan pasangan alternatifnya
 const imageData = [
   {
     id: 1,
@@ -62,7 +60,6 @@ const imageData = [
 ];
 
 export default function Index() {
-  // State untuk melacak gambar mana yang sedang menampilkan versi alternatif
   const [imageStates, setImageStates] = useState<{ [key: number]: boolean }>(
     {}
   );
