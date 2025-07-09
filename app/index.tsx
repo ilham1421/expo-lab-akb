@@ -108,7 +108,7 @@ export default function Index() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Grid Gambar 3x3</Text>
+      <Text style={styles.title}>Muh. Ilham Akbar (Grid Gambar)</Text>
       <Text style={styles.subtitle}>
         Klik gambar untuk mengubah dan memperbesar
       </Text>
