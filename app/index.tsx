@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import {
   Animated,
   Dimensions,
@@ -66,6 +66,15 @@ export default function Index() {
 
   const [imageScales, setImageScales] = useState<{ [key: number]: number }>({});
 
+  const animatedValues = useRef<{ [key: number]: Animated.Value }>({});
+
+  const getAnimatedValue = (imageId: number) => {
+    if (!animatedValues.current[imageId]) {
+      animatedValues.current[imageId] = new Animated.Value(1);
+    }
+    return animatedValues.current[imageId];
+  };
+
   const handleImagePress = (imageId: number) => {
     setShowAlternate((prev) => ({
       ...prev,
@@ -75,6 +84,15 @@ export default function Index() {
     setImageScales((prev) => {
       const currentScale = prev[imageId] || 1;
       const newScale = Math.min(currentScale + 0.2, 2);
+
+      const animatedValue = getAnimatedValue(imageId);
+
+      Animated.timing(animatedValue, {
+        toValue: newScale,
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
+
       return {
         ...prev,
         [imageId]: newScale,
@@ -85,8 +103,8 @@ export default function Index() {
   const renderGrid = () => {
     return imageData.map((item) => {
       const isAlternate = showAlternate[item.id] || false;
-      const scale = imageScales[item.id] || 1;
       const imageUri = isAlternate ? item.alt : item.main;
+      const animatedValue = getAnimatedValue(item.id);
 
       return (
         <TouchableOpacity
@@ -96,7 +114,12 @@ export default function Index() {
           activeOpacity={0.8}
         >
           <Animated.View
-            style={[styles.imageContainer, { transform: [{ scale }] }]}
+            style={[
+              styles.imageContainer,
+              {
+                transform: [{ scale: animatedValue }],
+              },
+            ]}
           >
             <Image
               source={{ uri: imageUri }}
