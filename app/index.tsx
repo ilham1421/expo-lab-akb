@@ -76,15 +76,23 @@ export default function Index() {
   };
 
   const handleImagePress = (imageId: number) => {
+    // Toggle antara gambar utama dan alternatif
     setShowAlternate((prev) => ({
       ...prev,
       [imageId]: !prev[imageId],
     }));
 
+    // Update scale dengan batasan maksimum 2x
     setImageScales((prev) => {
       const currentScale = prev[imageId] || 1;
-      const newScale = Math.min(currentScale + 0.2, 2);
+      let newScale = Math.min(currentScale + 0.2, 2);
 
+      // Reset ke 1 jika sudah mencapai maksimum
+      if (currentScale >= 2) {
+        newScale = 1;
+      }
+
+      // Implementasi animasi penskalaan
       const animatedValue = getAnimatedValue(imageId);
 
       Animated.timing(animatedValue, {
@@ -105,6 +113,7 @@ export default function Index() {
       const isAlternate = showAlternate[item.id] || false;
       const imageUri = isAlternate ? item.alt : item.main;
       const animatedValue = getAnimatedValue(item.id);
+      const currentScale = imageScales[item.id] || 1;
 
       return (
         <TouchableOpacity
@@ -126,6 +135,11 @@ export default function Index() {
               style={styles.image}
               resizeMode="cover"
             />
+            {currentScale > 1 && (
+              <View style={styles.scaleIndicator}>
+                <Text style={styles.scaleText}>{currentScale.toFixed(1)}x</Text>
+              </View>
+            )}
           </Animated.View>
         </TouchableOpacity>
       );
@@ -179,8 +193,8 @@ const styles = StyleSheet.create({
     overflow: "visible",
   },
   imageContainer: {
-    width: "100%",
-    height: "100%",
+    width: 100,
+    height: 100,
     borderRadius: 8,
     overflow: "hidden",
     backgroundColor: "#ddd",
@@ -191,7 +205,21 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   image: {
-    width: "100%",
-    height: "100%",
+    width: 100,
+    height: 100,
+  },
+  scaleIndicator: {
+    position: "absolute",
+    top: 5,
+    right: 5,
+    backgroundColor: "rgba(0, 0, 0, 0.7)",
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+  },
+  scaleText: {
+    color: "white",
+    fontSize: 10,
+    fontWeight: "bold",
   },
 });
