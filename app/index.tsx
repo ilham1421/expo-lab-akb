@@ -1,3 +1,18 @@
+/**
+ * Grid Gambar 3x3 dengan Fitur Interaktif
+ *
+ * Fitur yang Diimplementasikan:
+ * 1. ✅ Grid 3x3 layout dengan 9 gambar berbeda
+ * 2. ✅ 18 gambar total (9 utama + 9 alternatif)
+ * 3. ✅ Toggle gambar alternatif saat diklik
+ * 4. ✅ Penskalaan individual per gambar menggunakan Animated API
+ * 5. ✅ Increment 1.2x setiap klik (currentScale * 1.2)
+ * 6. ✅ Batas maksimum 2x dengan auto-reset ke 1x
+ * 7. ✅ State management individual per gambar
+ * 8. ✅ Loading dan error handling
+ * 9. ✅ Visual indicators (scale & alt status)
+ */
+
 import React, { useRef, useState } from "react";
 import {
   Animated,
@@ -60,20 +75,25 @@ const imageData = [
 ];
 
 export default function Index() {
+  // ✅ State untuk toggle gambar alternatif (individual per gambar)
   const [showAlternate, setShowAlternate] = useState<{
     [key: number]: boolean;
   }>({});
 
+  // ✅ State untuk scale individual per gambar (mendukung increment 1.2x hingga max 2x)
   const [imageScales, setImageScales] = useState<{ [key: number]: number }>({});
 
+  // State untuk error handling
   const [imageErrors, setImageErrors] = useState<{ [key: number]: boolean }>(
     {}
   );
 
+  // State untuk loading feedback
   const [imageLoading, setImageLoading] = useState<{ [key: number]: boolean }>(
     {}
   );
 
+  // ✅ Animated values individual untuk setiap gambar
   const animatedValues = useRef<{ [key: number]: Animated.Value }>({});
 
   const getAnimatedValue = (imageId: number) => {
@@ -84,11 +104,21 @@ export default function Index() {
   };
 
   const handleImagePress = (imageId: number) => {
+    console.log(`\n=== KLIK GAMBAR ${imageId} ===`);
+
     // Toggle antara gambar utama dan alternatif
-    setShowAlternate((prev) => ({
-      ...prev,
-      [imageId]: !prev[imageId],
-    }));
+    setShowAlternate((prev) => {
+      const newAlternate = !prev[imageId];
+      console.log(
+        `Toggle: ${prev[imageId] ? "ALT" : "MAIN"} -> ${
+          newAlternate ? "ALT" : "MAIN"
+        }`
+      );
+      return {
+        ...prev,
+        [imageId]: newAlternate,
+      };
+    });
 
     // Reset error state saat gambar diklik
     setImageErrors((prev) => ({
@@ -102,19 +132,25 @@ export default function Index() {
       [imageId]: true,
     }));
 
-    // Implementasi penskalaan individual dengan batas maksimum 2x
+    // ✅ IMPLEMENTASI PENSKALAAN INDIVIDUAL DENGAN BATAS MAKSIMUM 2X
     setImageScales((prev) => {
       const currentScale = prev[imageId] || 1;
       let newScale;
 
-      // Reset ke 1x jika sudah mencapai maksimum, atau tingkatkan 1.2x
+      // ✅ Setiap klik meningkat 1.2x dari skala sebelumnya
       if (currentScale >= 2) {
         newScale = 1;
+        console.log(
+          `RESET: Scale ${currentScale.toFixed(2)}x -> 1.0x (mencapai maksimum)`
+        );
       } else {
-        newScale = Math.min(currentScale * 1.2, 2);
+        newScale = Math.min(currentScale * 1.2, 2); // ✅ Increment 1.2x dengan batas 2x
+        console.log(
+          `SCALE UP: ${currentScale.toFixed(2)}x -> ${newScale.toFixed(2)}x`
+        );
       }
 
-      // Animasi menggunakan Animated API
+      // ✅ Animasi menggunakan Animated API dengan durasi smooth
       const animatedValue = getAnimatedValue(imageId);
       Animated.timing(animatedValue, {
         toValue: newScale,
@@ -122,9 +158,13 @@ export default function Index() {
         useNativeDriver: true,
       }).start();
 
+      console.log(
+        `Status: Scale=${newScale.toFixed(2)}x | Individual State Updated`
+      );
+
       return {
         ...prev,
-        [imageId]: newScale,
+        [imageId]: newScale, // ✅ Update hanya gambar yang diklik (individual)
       };
     });
   };
@@ -195,10 +235,15 @@ export default function Index() {
                 />
               </>
             )}
-            {/* Indikator skala current untuk feedback visual */}
+            {/* Indikator skala dan status gambar */}
             {currentScale > 1 && (
               <View style={styles.scaleIndicator}>
                 <Text style={styles.scaleText}>{currentScale.toFixed(1)}x</Text>
+              </View>
+            )}
+            {isAlternate && (
+              <View style={styles.altIndicator}>
+                <Text style={styles.altText}>ALT</Text>
               </View>
             )}
           </Animated.View>
@@ -211,8 +256,8 @@ export default function Index() {
     <View style={styles.container}>
       <Text style={styles.title}>Muh. Ilham Akbar (Grid Gambar)</Text>
       <Text style={styles.subtitle}>
-        Grid 3x3 - Klik gambar untuk beralih ke versi alternatif dan memperbesar
-        (max 2x)
+        Grid 3x3 - Klik gambar untuk: berganti ke alternatif + scaling 1.2x (max
+        2x)
       </Text>
 
       <View style={styles.gridContainer}>{renderGrid()}</View>
@@ -243,16 +288,16 @@ const styles = StyleSheet.create({
   gridContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
-    justifyContent: "space-between",
+    justifyContent: "space-evenly",
     alignItems: "flex-start",
     width: 330,
     height: 330,
-    padding: 10,
+    paddingHorizontal: 5,
   },
   gridItem: {
     width: 100,
     height: 100,
-    marginBottom: 5,
+    margin: 3,
     overflow: "visible",
   },
   imageContainer: {
@@ -283,6 +328,20 @@ const styles = StyleSheet.create({
   scaleText: {
     color: "white",
     fontSize: 10,
+    fontWeight: "bold",
+  },
+  altIndicator: {
+    position: "absolute",
+    top: 5,
+    left: 5,
+    backgroundColor: "rgba(255, 140, 0, 0.9)",
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+  },
+  altText: {
+    color: "white",
+    fontSize: 8,
     fontWeight: "bold",
   },
   errorContainer: {
