@@ -84,30 +84,38 @@ export default function Index() {
   };
 
   const handleImagePress = (imageId: number) => {
+    // Toggle antara gambar utama dan alternatif
     setShowAlternate((prev) => ({
       ...prev,
       [imageId]: !prev[imageId],
     }));
 
+    // Reset error state saat gambar diklik
     setImageErrors((prev) => ({
       ...prev,
       [imageId]: false,
     }));
 
+    // Set loading state untuk feedback visual
     setImageLoading((prev) => ({
       ...prev,
       [imageId]: true,
     }));
+
+    // Implementasi penskalaan individual dengan batas maksimum 2x
     setImageScales((prev) => {
       const currentScale = prev[imageId] || 1;
       let newScale;
+
+      // Reset ke 1x jika sudah mencapai maksimum, atau tingkatkan 1.2x
       if (currentScale >= 2) {
         newScale = 1;
       } else {
         newScale = Math.min(currentScale * 1.2, 2);
       }
-      const animatedValue = getAnimatedValue(imageId);
 
+      // Animasi menggunakan Animated API
+      const animatedValue = getAnimatedValue(imageId);
       Animated.timing(animatedValue, {
         toValue: newScale,
         duration: 300,
@@ -140,9 +148,10 @@ export default function Index() {
   };
 
   const renderGrid = () => {
+    // Render 9 gambar dalam layout grid 3x3
     return imageData.map((item) => {
       const isAlternate = showAlternate[item.id] || false;
-      const imageUri = isAlternate ? item.alt : item.main;
+      const imageUri = isAlternate ? item.alt : item.main; // Pilih gambar utama atau alternatif
       const animatedValue = getAnimatedValue(item.id);
       const currentScale = imageScales[item.id] || 1;
       const hasError = imageErrors[item.id] || false;
@@ -159,6 +168,7 @@ export default function Index() {
             style={[
               styles.imageContainer,
               {
+                // Aplikasi transform scale individual per gambar
                 transform: [{ scale: animatedValue }],
               },
             ]}
@@ -185,6 +195,7 @@ export default function Index() {
                 />
               </>
             )}
+            {/* Indikator skala current untuk feedback visual */}
             {currentScale > 1 && (
               <View style={styles.scaleIndicator}>
                 <Text style={styles.scaleText}>{currentScale.toFixed(1)}x</Text>
@@ -200,7 +211,8 @@ export default function Index() {
     <View style={styles.container}>
       <Text style={styles.title}>Muh. Ilham Akbar (Grid Gambar)</Text>
       <Text style={styles.subtitle}>
-        Klik gambar untuk mengubah dan memperbesar
+        Grid 3x3 - Klik gambar untuk beralih ke versi alternatif dan memperbesar
+        (max 2x)
       </Text>
 
       <View style={styles.gridContainer}>{renderGrid()}</View>
@@ -231,15 +243,16 @@ const styles = StyleSheet.create({
   gridContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
     width: 330,
     height: 330,
+    padding: 10,
   },
   gridItem: {
     width: 100,
     height: 100,
-    margin: 5,
+    marginBottom: 5,
     overflow: "visible",
   },
   imageContainer: {
