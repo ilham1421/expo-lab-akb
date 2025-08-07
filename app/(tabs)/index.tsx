@@ -21,7 +21,7 @@ export default function HomeScreen() {
 
         <View style={styles.imageContainer}>
           <Image
-            source={require("../../assets/images/icon.png")}
+            source={require("../../assets/images/Logo_Universitas_Muhammadiyah_Makassar_Resmi.png")}
             style={styles.universityImage}
             resizeMode="contain"
           />

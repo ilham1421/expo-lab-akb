@@ -1,6 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Link } from "expo-router";
-import React from "react";
 import {
   ScrollView,
   StyleSheet,
